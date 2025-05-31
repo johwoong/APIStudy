@@ -9,11 +9,7 @@ ResourceManager::ResourceManager()
 
 ResourceManager::~ResourceManager()
 {
-    map<wstring, CTexture*>::iterator iter = m_mapTex.begin();
-    for (; iter != m_mapTex.end(); ++iter)
-    {
-        delete iter->second;
-    }
+    Safe_Delete_Map(m_mapTex);
 }
 
 CTexture* ResourceManager::LoadTexture(const wstring& _strKey, const wstring& _strRelativePath)
@@ -35,13 +31,29 @@ CTexture* ResourceManager::LoadTexture(const wstring& _strKey, const wstring& _s
     return pTex;
 }
 
+CTexture* ResourceManager::CreateTexture(const wstring& _strKey, UINT _iWidth, UINT _iHeight)
+{
+    CTexture* pTex = FindTexture(_strKey);
+    if (nullptr != pTex)
+    {
+        return pTex;
+    }
+
+    pTex = new CTexture;
+    pTex->Create(_iWidth, _iHeight);
+    pTex->SetKey(_strKey);
+    m_mapTex.insert(make_pair(_strKey, pTex));
+
+    return pTex;
+}
+
 CTexture* ResourceManager::FindTexture(const wstring& _strKey)
 {
-    map<wstring, CTexture*>::iterator iter = m_mapTex.find(_strKey);
+    map<wstring, CRes*>::iterator iter = m_mapTex.find(_strKey);
 
     if (iter == m_mapTex.end())
     {
         return nullptr;
     }
-    return iter->second;
+    return (CTexture*)iter->second;
 }

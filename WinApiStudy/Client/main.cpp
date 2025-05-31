@@ -1,4 +1,4 @@
-﻿#include "pch.h"
+﻿#include "global.h".h"
 #include "framework.h"
 #include "Client.h"
 #include "CCore.h"
@@ -46,7 +46,7 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,  // 실행된 프로세스의 �
 	}
 
 	// Core 초기화
-	if (FAILED(CCore::GetInst()->Init(g_hWnd, POINT{ 1280, 768 })))
+	if ((CCore::GetInst()->Init(g_hWnd, POINT{ 1280, 768 })))
 	{
 		MessageBox(nullptr, L"Core 객체 초기화 실패", L"ERROR", MB_OK);
 		return FALSE;
@@ -169,6 +169,8 @@ POINT g_ptRB;
 
 bool bLbtnDown = false;
 
+INT_PTR __stdcall TileCountProc(HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam);
+
 LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 {
 	switch (message)
@@ -182,6 +184,9 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 		case IDM_ABOUT:
 			DialogBox(hInst, MAKEINTRESOURCE(IDD_ABOUTBOX), hWnd, About);
 			break;
+		case ID_MENU_TITLE:
+			DialogBox(hInst, MAKEINTRESOURCE(IDD_TILE_COUNT), hWnd, TileCountProc);
+			break;
 		case IDM_EXIT:
 			DestroyWindow(hWnd);
 			break;
@@ -194,11 +199,11 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 	{
 		PAINTSTRUCT ps;
 
-		HDC hdc = BeginPaint(hWnd, &ps);
-
+		HDC hdc = BeginPaint(hWnd, &ps); // 그리기 시작 알림
+		// DC를 얻어옴
 		//Rectangle(hdc, 1180, 668, 1280, 768);
 
-		// 그리기 종료
+		// 그리기 종료 알림
 		EndPaint(hWnd, &ps);
 	}
 	break;
